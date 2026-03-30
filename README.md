@@ -1,4 +1,4 @@
-🧠 Smart Task Manager (Spring Boot)
+
 📌 Project Description
 
 Smart Task Manager is a backend application built using Spring Boot that allows users to manage their daily tasks efficiently. It provides RESTful APIs to perform CRUD operations like creating, updating, retrieving, and deleting tasks. The application is connected to a MySQL database for persistent storage.
@@ -43,3 +43,4 @@ DELETE	/tasks/{id}	Delete task
 🌐 Frontend integration (React)
 👨‍💻 Author
 Sindhu Srinivas
+
