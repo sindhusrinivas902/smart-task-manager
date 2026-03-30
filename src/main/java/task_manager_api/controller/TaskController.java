@@ -5,55 +5,64 @@ import org.springframework.web.bind.annotation.*;
 import task_manager_api.model.Task;
 import task_manager_api.repository.TaskRepository;
 
+import java.time.LocalDate;
+import java.util.Comparator;
 import java.util.List;
 
 @RestController
+@CrossOrigin
 @RequestMapping("/tasks")
 public class TaskController {
 
     @Autowired
-    private TaskRepository taskRepository;
+    private TaskRepository repository;
 
-    // ✅ GET ALL
-    @GetMapping
-    public List<Task> getAllTasks() {
-        return taskRepository.findAll();
-    }
-
-    // ✅ GET BY ID
-    @GetMapping("/{id}")
-    public Task getTaskById(@PathVariable Long id) {
-        return taskRepository.findById(id).orElse(null);
-    }
-
-    // ✅ CREATE (POST)
+    // CREATE TASK
     @PostMapping
-    public Task createTask(@RequestBody Task task) {
-        return taskRepository.save(task);
-    }
+    public Task addTask(@RequestBody Task task) {
 
-    // ✅ UPDATE
-    @PutMapping("/{id}")
-    public Task updateTask(@PathVariable Long id, @RequestBody Task task) {
-        Task existing = taskRepository.findById(id).orElse(null);
+        task.setStatus("Pending");
 
-        if (existing != null) {
-            existing.setTitle(task.getTitle());
-            existing.setDescription(task.getDescription());
-            existing.setStatus(task.getStatus());
-            existing.setPriority(task.getPriority());
-            existing.setDeadline(task.getDeadline());
+        LocalDate today = LocalDate.now();
 
-            return taskRepository.save(existing);
+        if (task.getDeadline() == null) {
+            task.setPriority("LOW");
+        }
+        else if (task.getDeadline().isBefore(today.plusDays(2))) {
+            task.setPriority("HIGH");
+        }
+        else if (task.getDeadline().isBefore(today.plusDays(7))) {
+            task.setPriority("MEDIUM");
+        }
+        else {
+            task.setPriority("LOW");
         }
 
-        return null;
+        return repository.save(task);
     }
 
-    // ✅ DELETE
-    @DeleteMapping("/{id}")
-    public String deleteTask(@PathVariable Long id) {
-        taskRepository.deleteById(id);
-        return "Task deleted";
+    // GET ALL TASKS (sorted by deadline)
+    @GetMapping
+    public List<Task> getAllTasks() {
+        List<Task> tasks = repository.findAll();
+
+        tasks.sort(Comparator.comparing(
+                Task::getDeadline,
+                Comparator.nullsLast(Comparator.naturalOrder())
+        ));
+
+        return tasks;
     }
-}
+
+    // DELETE TASK
+    @DeleteMapping("/{id}")
+    public void deleteTask(@PathVariable Long id) {
+        repository.deleteById(id);
+    }
+    @PutMapping("/{id}/complete")
+    public Task markCompleted(@PathVariable Long id) {
+        Task task = repository.findById(id).orElseThrow();
+        task.setStatus("Completed");
+        return repository.save(task);
+    }
+    }

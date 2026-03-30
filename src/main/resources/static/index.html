@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Smart Task Manager</title>
+    <style>
+        li {
+            margin: 8px 0;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+        }
+        button {
+            margin-left: 5px;
+        }
+    </style>
+</head>
+<body>
+
+<h2>Add Task</h2>
+
+<input id="title" placeholder="Title"><br><br>
+<input id="description" placeholder="Description"><br><br>
+<input id="deadline" type="date"><br><br>
+
+<button onclick="addTask()">Add Task</button>
+
+<h2>📌 Task Dashboard</h2>
+
+<h3 onclick="toggleSection('todayTasks')" style="cursor:pointer;">
+    🔴 Due Today ▼
+</h3>
+<ul id="todayTasks" style="display:none;"></ul>
+
+<h3 onclick="toggleSection('tomorrowTasks')" style="cursor:pointer;">
+    🟠 Due Tomorrow ▼
+</h3>
+<ul id="tomorrowTasks" style="display:none;"></ul>
+
+<h3 onclick="toggleSection('otherTasks')" style="cursor:pointer;">
+    🟢 Other Tasks ▼
+</h3>
+<ul id="otherTasks" style="display:none;"></ul>
+
+<h3 onclick="toggleSection('completedTasks')" style="cursor:pointer;">
+    🟣 Completed Tasks ▼
+</h3>
+<ul id="completedTasks" style="display:none;"></ul>
+
+<script>
+
+    // ---------------- ADD TASK ----------------
+    async function addTask() {
+        const title = document.getElementById("title").value;
+        const description = document.getElementById("description").value;
+        const deadline = document.getElementById("deadline").value;
+
+        if (!title || !description || !deadline) {
+            alert("Please fill all fields");
+            return;
+        }
+
+        const task = {
+            title,
+            description,
+            deadline,
+            status: "Pending"
+        };
+
+        await fetch("/tasks", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify(task)
+        });
+
+        document.getElementById("title").value = "";
+        document.getElementById("description").value = "";
+        document.getElementById("deadline").value = "";
+
+        loadTasks();
+    }
+
+    // ---------------- LOAD TASKS ----------------
+    async function loadTasks() {
+        const res = await fetch("/tasks");
+        const data = await res.json();
+
+        const todayList = document.getElementById("todayTasks");
+        const tomorrowList = document.getElementById("tomorrowTasks");
+        const otherList = document.getElementById("otherTasks");
+        const completedList = document.getElementById("completedTasks");
+
+        todayList.innerHTML = "";
+        tomorrowList.innerHTML = "";
+        otherList.innerHTML = "";
+        completedList.innerHTML = "";
+
+        const today = new Date();
+        today.setHours(0,0,0,0);
+
+        const tomorrow = new Date();
+        tomorrow.setDate(today.getDate() + 1);
+        tomorrow.setHours(0,0,0,0);
+
+        data.forEach(t => {
+
+            const li = document.createElement("li");
+
+           let buttons = `
+    <button onclick="deleteTask(${t.id})">Delete</button>
+    <button onclick="editTask(${t.id}, \`${t.title}\`, \`${t.description}\`, \`${t.deadline}\`)">Edit</button>
+`;
+
+if (t.status !== "Completed") {
+    buttons += `<button onclick="markCompleted(${t.id})">Complete</button>`;
+}
+li.innerHTML = `
+    ${t.title} | ${t.description} | ${t.deadline} | ${t.status}
+    ${buttons}
+`;
+            let deadlineDate = new Date(t.deadline);
+            deadlineDate.setHours(0,0,0,0);
+
+            if (t.status === "Completed") {
+    completedList.appendChild(li);
+}
+            else if (deadlineDate.getTime() === today.getTime()) {
+                todayList.appendChild(li);
+            }
+            else if (deadlineDate.getTime() === tomorrow.getTime()) {
+                tomorrowList.appendChild(li);
+            }
+            else if (deadlineDate < today && t.status !== "Completed") {
+    li.innerHTML += " ⚠️ Overdue";
+    otherList.appendChild(li);
+}
+else {
+    otherList.appendChild(li);
+}
+        });
+    }
+
+    // ---------------- DELETE TASK ----------------
+    async function deleteTask(id) {
+        await fetch(`/tasks/${id}`, {
+            method: "DELETE"
+        });
+
+        loadTasks();
+    }
+
+    // ---------------- EDIT TASK ----------------
+    async function editTask(id, title, description, deadline) {
+
+        const newTitle = prompt("Edit Title", title);
+        const newDescription = prompt("Edit Description", description);
+        const newDeadline = prompt("Edit Deadline (yyyy-mm-dd)", deadline);
+
+        if (!newTitle || !newDescription || !newDeadline) return;
+
+        const updatedTask = {
+            title: newTitle,
+            description: newDescription,
+            deadline: newDeadline,
+            status: "Pending"
+        };
+
+        await fetch(`/tasks/${id}`, {
+            method: "PUT",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify(updatedTask)
+        });
+
+        loadTasks();
+    }
+
+    // ---------------- MARK COMPLETED ----------------
+    async function markCompleted(id) {
+        await fetch(`/tasks/${id}/complete`, {
+            method: "PUT"
+        });
+
+        loadTasks();
+    }
+
+    // ---------------- TOGGLE SECTIONS ----------------
+    function toggleSection(id) {
+        const el = document.getElementById(id);
+
+        if (el.style.display === "none") {
+            el.style.display = "block";
+        } else {
+            el.style.display = "none";
+        }
+    }
+
+    // INITIAL LOAD
+    loadTasks();
+</script>
+
+</body>
+</html>
