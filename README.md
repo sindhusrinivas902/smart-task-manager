@@ -27,11 +27,21 @@ Smart Task Manager is a full-stack web application built using Spring Boot that 
 - Designed REST APIs and integrated with frontend
 - Implemented task categorization based on deadlines and completion status
 
-⚙️ How to Run the Project
+🚀 How to Run the Project
 
 1. Clone the repository
-```bash
-git clone https://github.com/sindhusrinivas902/smart-task-manager.git
+2. Open in IntelliJ / VS Code
+3. Configure MySQL in application.properties:
+   spring.datasource.url=jdbc:mysql://localhost:3306/taskdb
+   spring.datasource.username=root
+   spring.datasource.password=yourpassword
+
+4. Run the application
+5. Open Postman and test APIs:
+   - GET /tasks
+   - POST /tasks
+   - PUT /tasks/{id}
+   - DELETE /tasks/{id}
 
 
 
