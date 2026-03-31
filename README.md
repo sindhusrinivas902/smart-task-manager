@@ -2,16 +2,13 @@
 
 Smart Task Manager is a full-stack web application built using Spring Boot that allows users to efficiently manage daily tasks. It provides RESTful APIs for performing CRUD operations and includes a dynamic frontend dashboard for task visualization and management.
 
- 🚀 Features
+ ✨ Features
 
-- ✅ Create new tasks  
-- 📋 View all tasks  
-- ✏️ Update existing tasks  
-- ❌ Delete tasks  
-- 🟡 Mark tasks as completed  
-- 📅 Categorize tasks based on deadline (Today / Tomorrow / Others)  
-- 🔗 REST API integration  
-- 💾 Persistent storage using MySQL database  
+- Create, Read, Update, Delete tasks (CRUD)
+- RESTful API design
+- MySQL database integration
+- Task prioritization and deadline tracking
+- Backend structured using Spring Boot 
 
 🛠️ Tech Stack
 
@@ -21,6 +18,13 @@ Smart Task Manager is a full-stack web application built using Spring Boot that 
 - API Testing: Postman  
 - Build Tool: Maven  
 - IDE: IntelliJ IDEA / VS Code
+
+🏗️ Architecture
+
+- Controller Layer → Handles API requests
+- Service Layer → Business logic (optional improvement)
+- Repository Layer → Database interaction
+- Entity Layer → Data model
 
  📌 Project Highlights
 - Built a full-stack CRUD application from scratch
@@ -43,6 +47,23 @@ Smart Task Manager is a full-stack web application built using Spring Boot that 
    - PUT /tasks/{id}
    - DELETE /tasks/{id}
 
+📌 Sample API Request
+
+POST /tasks
+
+{
+  "title": "Learn Spring Boot",
+  "description": "Build API",
+  "status": "Pending",
+  "priority": "High",
+  "deadline": "2026-04-01"
+}
+
+🔮 Future Enhancements
+
+- Add authentication (Spring Security)
+- Build frontend using React
+- Deploy using AWS / Render
 
 
 
