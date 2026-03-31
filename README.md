@@ -20,7 +20,12 @@ Smart Task Manager is a full-stack web application built using Spring Boot that 
 - Frontend: HTML, CSS, JavaScript  
 - API Testing: Postman  
 - Build Tool: Maven  
-- IDE: IntelliJ IDEA / VS Code  
+- IDE: IntelliJ IDEA / VS Code
+
+ 📌 Project Highlights
+- Built a full-stack CRUD application from scratch
+- Designed REST APIs and integrated with frontend
+- Implemented task categorization based on deadlines and completion status
 
 ⚙️ How to Run the Project
 
@@ -28,10 +33,7 @@ Smart Task Manager is a full-stack web application built using Spring Boot that 
 ```bash
 git clone https://github.com/sindhusrinivas902/smart-task-manager.git
 
- 📌 Project Highlights
-- Built a full-stack CRUD application from scratch
-- Designed REST APIs and integrated with frontend
-- Implemented task categorization based on deadlines and completion status
+
 
 
 
